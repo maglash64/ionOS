@@ -1,12 +1,12 @@
 /*
-  MAIN KERNEL SORCE
+  MAIN KERNEL SOURCE
   Made By Ankit Sharma : maglash64@gmail.com
 */
 #include "../include/system/system.h"
 #include "../driver/timer/timer.h"
 #include "../driver/keyboard/keyboard.h"
 
-void kmain()
+void kmain(void)
 {
   terminal_init();
   setup_gdt();
