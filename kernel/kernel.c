@@ -26,7 +26,7 @@ void get_hardwareinfo()
   }
   if(cpuinfo.fpu_supported == 1)
   {
-    print("FPU is supported.\n");
+    //print("FPU is supported.\n");
   }
 }
 
