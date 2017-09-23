@@ -167,3 +167,26 @@ void print(char *str)
     putc(*(str + i));
   }
 }
+
+void print_int(int i)
+{
+  char const digit[] = "0123456789";
+  static char b[12] = {0};
+  char *p = b;
+  if(i<0){
+      *p++ = '-';
+      i *= -1;
+  }
+  int shifter = i;
+  do{ //Move to where representation ends
+      ++p;
+      shifter = shifter/10;
+  }while(shifter);
+  *p = '\0';
+  do{ //Move back, inserting digits as u go
+      *--p = digit[i%10];
+      i = i/10;
+  }while(i);
+  print(b);
+}
+

@@ -5,9 +5,11 @@ global start
 [extern kmain]
 [extern handle_isr]
 
-MAGIC     equ 0x1BADB002    ;multiboot magic number
-FLAGS     equ 0x00          ;multiboot flags
-CHECKSUM  equ -MAGIC        ;checksum => (magic number + flags + checksum should be 0)
+MODULEALIGN equ 1<<0
+MEMINFO     equ 1<<1
+MAGIC       equ 0x1BADB002        ;multiboot magic number
+FLAGS       equ 0x03              ;multiboot flags
+CHECKSUM    equ -(MAGIC + FLAGS)  ;checksum => (magic number + flags + checksum should be 0)
 
 section .multiboot:         ;section for the multiboot header
 align 4                     ;data should be 4 byte aligned
@@ -17,7 +19,7 @@ align 4                     ;data should be 4 byte aligned
 
 section .bss
 align 4
-  kstack: resb 8096        ;reserve memory for stack to be used by HLL
+  kstack: resb 8096         ;reserve memory for stack to be used by HLL
 
 section .data
   sleep_time: dd 0
@@ -366,3 +368,88 @@ isr_stub:
   add  esp,8
   sti
   iret
+
+;***********************************************************************************************
+
+global get_cpuid
+
+get_cpuid:
+  ;***clear all reg's
+  mov eax,0
+  mov ebx,0
+  mov ecx,0
+  mov edx,0
+
+  ;***get version,stepping,model..
+  mov eax,1
+  cpuid 
+  mov edx,eax               ;store value of eax for further use as eax may be overwriten by other instructions
+  mov edi,[esp + 4]         ;retrive the pointer to the CPUID strcture
+  mov cl,byte 00001111b     ;value used for and'ing to extract first 3 bits from eax, extract stepping
+  and cx,ax                 ;do the shit
+  mov [edi + 48],cl         ;save it in structure..
+  mov cl,byte 11110000b     ;extract model
+  and cx,ax                 
+  mov [edi + 49],cl
+  mov cx,0   
+  mov ch,byte 00001111b     ;extract family
+  and cx,ax                 
+  mov [edi + 50],cl
+    
+  ;***get the branding string
+  mov eax,0x80000002
+  cpuid
+  mov [edi],eax
+  mov [edi + 4],ebx
+  mov [edi + 8],ecx
+  mov [edi + 12],edx
+  mov eax,0x80000003
+  cpuid
+  mov [edi + 16],eax
+  mov [edi + 20],ebx
+  mov [edi + 24],ecx
+  mov [edi + 28],edx
+  mov eax,0x80000004
+  cpuid
+  mov [edi + 32],eax
+  mov [edi + 36],ebx
+  mov [edi + 40],ecx
+  mov [edi + 44],edx
+
+  ;***get extended info
+  mov eax,1
+  cpuid
+  mov eax,edx
+  and al, 00000001b       ; x87 FPU support
+  mov [edi + 51],al
+  mov eax,edx
+  and al, 00001000b       ; PSE - Page Size Extention (4MiB) 
+  mov [edi + 52],al
+  mov eax,edx
+  and al, 00100000b       ; PAE - Physical Address Extention (64-bit Addressing)
+  mov [edi + 53],al
+  mov eax,edx
+  and eax, 33554432       ; SSE1 support
+  mov [edi + 54],eax
+  mov eax,edx
+  and eax, 67108864       ; SSE2 support
+  mov [edi + 55],eax
+  mov eax,ecx
+  and eax, 0x1            ; SSE3 support
+  mov [edi + 56],eax
+  mov eax,edx
+  and eax, 268435456      ; HT support
+  mov [edi + 57],eax
+  mov eax,edx
+  and eax, 4194305        ; ACPI support
+  mov [edi + 58],eax
+  mov eax,edx
+  and eax, 8388608        ; MMX support
+  mov [edi + 59],eax
+
+  ret
+
+  
+
+
+

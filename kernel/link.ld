@@ -1,28 +1,39 @@
 ENTRY(start)
-
 SECTIONS
 {
-	. = 0x00100000;
+	. = 1M;
 
-	.text BLOCK(16K) : ALIGN(4K)
+	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
 		*(.text)
 	}
 
-	.rodata BLOCK(16K) : ALIGN(4K)
+	.note.gnu.build-id BLOCK(4K) : ALIGN(4K)
+	{
+		*(.note.gnu.build-id)
+	}
+
+	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.rodata)
 	}
 
-	.data BLOCK(16K) : ALIGN(4K)
+	.data BLOCK(4K) : ALIGN(4K)
 	{
 		*(.data)
 	}
 
-	.bss BLOCK(16K) : ALIGN(4K)
+	.bss BLOCK(4K) : ALIGN(4K)
 	{
+		sbss = .;
 		*(COMMON)
 		*(.bss)
+		ebss = .;
+	}
+
+	/DISCARD/ : {
+		*(.eh_frame)
+		*(.comment)
 	}
 }
