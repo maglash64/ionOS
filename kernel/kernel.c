@@ -26,7 +26,27 @@ void get_hardwareinfo()
   }
   if(cpuinfo.fpu_supported == 1)
   {
-    //print("FPU is supported.\n");
+    print("FPU is supported.\n");
+  }
+  if(cpuinfo.ht_supported == 1)
+  {
+    print("HyperThreading is supported.\n");
+  }
+  if(cpuinfo.mmx_supported == 1)
+  {
+    print("MMX is supported.\n");
+  }
+  if(cpuinfo.sse == 1)
+  {
+    if(cpuinfo.sse2 == 1)
+    {
+      if(cpuinfo.sse3 == 1)
+      {
+        print("SSE,SSE2,SSE3 is supported.\n");
+      }
+      print("SSE,SSE2 is supported.\n");
+    }
+    print("SSE is supported.\n");
   }
 }
 

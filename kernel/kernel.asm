@@ -11,7 +11,7 @@ MAGIC       equ 0x1BADB002        ;multiboot magic number
 FLAGS       equ 0x03              ;multiboot flags
 CHECKSUM    equ -(MAGIC + FLAGS)  ;checksum => (magic number + flags + checksum should be 0)
 
-section .multiboot:         ;section for the multiboot header
+section .multiboot          ;section for the multiboot header
 align 4                     ;data should be 4 byte aligned
   dd MAGIC                  ;write the magic number
   dd FLAGS                  ;and the flags
@@ -26,7 +26,7 @@ section .data
 
 section .text
 start:
-  mov   esp,kstack            ;the base of the stack
+  mov   esp,kstack + 8096     ;the base of the stack
   mov   ebp,esp
   jmp   kmain                 ;jump to our C function
 
@@ -374,6 +374,7 @@ isr_stub:
 global get_cpuid
 
 get_cpuid:
+
   ;***clear all reg's
   mov eax,0
   mov ebx,0

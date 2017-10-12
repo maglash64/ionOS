@@ -5,7 +5,7 @@
 #include "../../include/system/system.h"
 
 
-uint8_t kbd_us[128] =
+volatile uint8_t kbd_us[128] =
 {
   0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
   '9', '0', '-', '=', '\b',	/* Backspace */
@@ -47,8 +47,8 @@ uint8_t kbd_us[128] =
 
 
 
-static uint8_t  kbd_buffer[256];
-static uint16_t kbd_buffer_len;
+volatile uint8_t  kbd_buffer[256];
+volatile uint16_t kbd_buffer_len;
 
 void keyboard_callback(void)
 {
